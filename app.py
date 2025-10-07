@@ -1,33 +1,4 @@
-"""
-Flask + SQLAlchemy single-file CRUD web app
-------------------------------------------------
-Features:
-- List, create, update, delete records (Items)
-- Works with any DB supported by SQLAlchemy (SQLite, PostgreSQL, MySQL, etc.)
-- Uses DATABASE_URL env var (falls back to local SQLite)
-- Minimal HTML UI via inline Jinja templates
 
-Quick start
------------
-1) Python 3.10+
-2) Install deps:
-   pip install flask sqlalchemy python-dotenv
-   # If NOT using SQLite also install a DB driver, e.g.:
-   # PostgreSQL: pip install psycopg2-binary
-   # MySQL/MariaDB: pip install pymysql
-3) Set env (optional):
-   export DATABASE_URL="sqlite:///app.db"  # or your DSN, e.g. postgresql+psycopg2://user:pass@host:5432/dbname
-   export FLASK_ENV=development
-   export SECRET_KEY="change-me"
-4) Run:
-   python flask_crud_webapp.py
-5) Open http://127.0.0.1:5000/
-
-Notes
------
-- If your DB already exists, the app will create the table `items` if missing.
-- For production, add CSRF protection and proper auth; this is a teaching example.
-"""
 
 from __future__ import annotations
 import os
