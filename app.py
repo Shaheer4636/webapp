@@ -44,6 +44,10 @@ from flask import (
 )
 from sqlalchemy import create_engine, Column, Integer, String, Text, Numeric, select
 from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
+from dotenv import load_dotenv
+
+# Load local .env if present (for local dev). In Azure Web App, use App Settings.
+load_dotenv()
 
 # ----------------------
 # Config & DB setup
