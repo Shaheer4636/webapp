@@ -1,0 +1,14 @@
+Flask>=3.0
+SQLAlchemy>=2.0
+gunicorn>=21.2
+python-dotenv>=1.0   # helpful locally; harmless in prod
+
+# ---- Choose ONE driver that matches your DB ----
+# PostgreSQL:
+# psycopg2-binary>=2.9
+
+# MySQL/MariaDB:
+# PyMySQL>=1.1
+
+# SQL Server (advanced; needs ODBC on the image, not recommended for first try):
+# pyodbc>=5.1
