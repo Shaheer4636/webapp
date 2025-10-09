@@ -1,5 +1,93 @@
- For Apache, contents from the following path to be cleared
-- FCAC: /data/bsro/htdocs/bsro/fcac
-- TP: /data/bsro/htdocs/bsro/tp
-- HT: /data/bsro/htdocs/bsro/ht
-- WWT: /data/bsro/htdocs/bsro/wwt
+# --- Apache cache clear (uses ticket paths) ---
+parameters:
+- name: ENVIRONMENT
+  type: string
+  default: INT
+  values: [INT, QA, UAT, PROD]
+
+# layers
+- name: apache
+  type: boolean
+  default: true
+
+# sites
+- name: bsro
+  type: boolean
+  default: true
+- name: firestonecompleteautocare
+  type: boolean
+  default: false
+- name: hibdontire
+  type: boolean
+  default: false
+- name: tiresplus
+  type: boolean
+  default: false
+- name: wheelworks
+  type: boolean
+  default: false
+- name: thefuzionzone
+  type: boolean
+  default: false
+
+# which paths from the ticket to clear
+- name: fcac_path
+  type: boolean
+  default: true
+- name: tp_path
+  type: boolean
+  default: false
+- name: ht_path
+  type: boolean
+  default: false
+- name: wwt_path
+  type: boolean
+  default: false
+
+variables:
+  INV_DIR: "$(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts"
+  PB_APACHE:  "$(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml"
+  # Ticket paths (exact):
+  P_FCAC: "/data/bsro/htdocs/bsro/fcac"
+  P_TP:   "/data/bsro/htdocs/bsro/tp"
+  P_HT:   "/data/bsro/htdocs/bsro/ht"
+  P_WWT:  "/data/bsro/htdocs/bsro/wwt"
+
+stages:
+- stage: apache_cache_clear
+  condition: eq('${{ parameters.apache }}', true)
+  jobs:
+  - job: apache_cache_clear
+    workspace: { clean: all }
+    steps:
+    - bash: |
+        set -euo pipefail
+        PATHS=()
+        {{ if eq(parameters.fcac_path, true) }} PATHS+=("$(P_FCAC)") {{ end }}
+        {{ if eq(parameters.tp_path,   true) }} PATHS+=("$(P_TP)")   {{ end }}
+        {{ if eq(parameters.ht_path,   true) }} PATHS+=("$(P_HT)")   {{ end }}
+        {{ if eq(parameters.wwt_path,  true) }} PATHS+=("$(P_WWT)")  {{ end }}
+        if [ ${#PATHS[@]} -eq 0 ]; then
+          echo "No paths selected; nothing to clear."; exit 0
+        fi
+        export PATHS_CSV="$(IFS=, ; echo "${PATHS[*]}")"
+        echo "ENV=${{ parameters.ENVIRONMENT }}"
+        echo "PATHS=$PATHS_CSV"
+
+        run_site () {
+          local SITE_PATTERN="$1"
+          echo "Clearing Apache cache for ${SITE_PATTERN} with paths: $PATHS_CSV"
+          ansible-playbook "$(PB_APACHE)" \
+            -i "$(INV_DIR)" \
+            -e web \
+            -e "site=${SITE_PATTERN}" \
+            -e "paths=${PATHS_CSV}"
+        }
+
+        {{ if eq(parameters.bsro, true) }}                      run_site "*.bsro.com"; {{ end }}
+        {{ if eq(parameters.firestonecompleteautocare, true) }} run_site "*.firestonecompleteautocare.com"; {{ end }}
+        {{ if eq(parameters.hibdontire, true) }}                run_site "*.hibdontire.com"; {{ end }}
+        {{ if eq(parameters.tiresplus, true) }}                 run_site "*.tiresplus.com"; {{ end }}
+        {{ if eq(parameters.wheelworks, true) }}                run_site "*.wheelworks.net"; {{ end }}
+        {{ if eq(parameters.thefuzionzone, true) }}             run_site "*.thefuzionzone.com"; {{ end }}
+      displayName: "Apache: clear ticket paths"
