@@ -1,0 +1,162 @@
+parameters:
+- name: IMPORTANT NOTES
+  type: string
+  default: For Branch/tag, be sure master is selected & leave Commit blank.
+- name: ENVIRONMENT
+  values:
+  - INT
+  - QA
+  - UAT
+  - PROD
+- name: APPLICATIONS
+  type: string
+  default: You must select at least one of the following applications
+- name: apache
+  type: boolean
+  default: false
+- name: varnish
+  type: boolean
+  default: false
+- name: akamai
+  type: boolean
+  default: false
+- name: WEBSITES
+  type: string
+  default: You must select at least one of the following websites
+- name: bsro
+  type: boolean
+  default: false
+- name: firestonecompleteautocare
+  type: boolean
+  default: false
+- name: hibdontire
+  type: boolean
+  default: false
+- name: tiresplus
+  type: boolean
+  default: false
+- name: wheelworks
+  type: boolean
+  default: false
+- name: thefuzionzone
+  type: boolean
+  default: false
+
+pool: CWH Build2
+trigger: none
+pr: none
+
+stages:
+  - stage: apache_cache_clear
+    condition: eq('${{ parameters.apache }}', true)
+    jobs:
+      - job: apache_cache_clear
+        workspace:
+          clean: all
+        steps:
+        - ${{ if eq(parameters.bsro, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for bsro site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.bsro.com"
+        - ${{ if eq(parameters.firestonecompleteautocare, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for firestonecompleteautocare site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.firestonecompleteautocare.com"
+        - ${{ if eq(parameters.hibdontire, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for hibdontire site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.hibdontire.com"
+        - ${{ if eq(parameters.tiresplus, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for tiresplus site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.tiresplus.com"
+        - ${{ if eq(parameters.wheelworks, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for wheelworks site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.wheelworks.net"
+        - ${{ if eq(parameters.thefuzionzone, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing apache cache for thefuzionzone site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-apache.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e web -e "site=*.thefuzionzone.com"
+
+  - stage: varnish_cache_clear
+    condition: eq('${{ parameters.varnish }}', true)
+    jobs:
+      - job: varnish_cache_clear
+        workspace:
+          clean: all
+        steps:
+        - ${{ if eq(parameters.bsro, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for bsro site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.bsro.com"
+        - ${{ if eq(parameters.firestonecompleteautocare, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for firestonecompleteautocare site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.firestonecompleteautocare.com"
+        - ${{ if eq(parameters.hibdontire, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for hibdontire site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.hibdontire.com"
+        - ${{ if eq(parameters.tiresplus, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for tiresplus site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.tiresplus.com"
+        - ${{ if eq(parameters.wheelworks, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for wheelworks site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.wheelworks.net"
+        - ${{ if eq(parameters.thefuzionzone, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing varnish cache for thefuzionzone site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-varnish.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e varnish -e "site=*.thefuzionzone.com"
+
+  - stage: akamai_cache_clear
+    condition: eq('${{ parameters.akamai }}', true)
+    jobs:
+      - job: akamai_cache_clear
+        workspace:
+          clean: all
+        steps:
+        - ${{ if eq(parameters.bsro, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for bsro site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.bsro.com"
+        - ${{ if eq(parameters.firestonecompleteautocare, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for firestonecompleteautocare site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.firestonecompleteautocare.com"
+        - ${{ if eq(parameters.hibdontire, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for hibdontire site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.hibdontire.com"
+        - ${{ if eq(parameters.tiresplus, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for tiresplus site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.tiresplus.com"
+        - ${{ if eq(parameters.wheelworks, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for wheelworks site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.wheelworks.net"
+        - ${{ if eq(parameters.thefuzionzone, true) }}:
+          - script: |
+               echo Environment selected is ${{  parameters.ENVIRONMENT }}
+               echo "Clearing akamai cache for thefuzionzone site"
+               ansible-playbook $(Build.SourcesDirectory)/ansible/cache_clear_playbooks/BSRO/cache-clear-bsro-akamai.yml -i $(Build.SourcesDirectory)/ansible/inventory/${{ parameters.ENVIRONMENT }}/hosts -e akamai -e "env=${{ parameters.ENVIRONMENT }} site=*.thefuzionzone.com"
